@@ -1,0 +1,25 @@
+minishell/
+|-- src/
+|   |-- main.c
+|   |-- parser/
+|   |   |-- parser.c
+|   |   |-- parser_utils.c
+|   |
+|   |-- executor/
+|   |   |-- executor.c
+|   |
+|   |-- builtins/
+|   |   |-- builtins.c
+|   |
+|   |-- signals/
+|   |   |-- signals.c
+|   |
+|   |-- utils/
+|       |-- utils.c
+|
+|-- includes/
+|   |-- minishell.h
+|
+|-- libft/ (my Libft library)
+|-- Makefile
+
