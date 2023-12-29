@@ -20,6 +20,7 @@ SIGNALS_DIR = signals
 UTILS_DIR = utils
 
 SRCS = $(wildcard $(SRC_DIR)/*.c) \
+		minishell.c \
        $(wildcard $(SRC_DIR)/$(PARSER_DIR)/*.c) \
        $(wildcard $(SRC_DIR)/$(EXECUTOR_DIR)/*.c) \
        $(wildcard $(SRC_DIR)/$(BUILTINS_DIR)/*.c) \

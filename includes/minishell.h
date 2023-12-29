@@ -10,4 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
+# include <unistd.h> 
+# include <stdlib.h>
+# include <fcntl.h>
+# include <stdio.h>
+# include <string.h>
+# include <signal.h>
+# include <sys/wait.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <dirent.h>
