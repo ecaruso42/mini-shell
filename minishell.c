@@ -19,7 +19,7 @@ int main(void)
     // Main shell loop
     while (1) {
         // Display prompt
-        input = readline("minishell> ");
+        input = readline("minishell$ ");
         
         // Check for EOF (Ctrl-D)
         if (!input) {

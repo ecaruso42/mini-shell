@@ -20,3 +20,6 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <dirent.h>
+# include "libft.h"
+
+
