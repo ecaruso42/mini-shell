@@ -6,7 +6,7 @@ struct {
     int error_code;
     const char *error_file;
     int exit_status;
-} g_shell_data;
+} g_shell_data; 
 
 int	is_numeric(const char *str)
 {
