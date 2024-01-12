@@ -83,7 +83,7 @@ char *find_path(t_mini *mini, char **env)
 	return(temp);
 }
 
-void execute_commands(t_mini *mini, char **env)
+/*void execute_commands(t_mini *mini, char **env)
 {
 	//l'execve funziona ma la matrice con in comandi la creo in questa funzione (char **str) mentre dovrebbe essere
 	//assegnata nel parser sulla variabile mini->toks
@@ -116,5 +116,5 @@ void execute_commands(t_mini *mini, char **env)
 		else
 			printf("PORCODIO\n");
 	}
-}
+}*/
 

@@ -28,7 +28,6 @@ int is_redirection(const char *str) {
     return (strcmp(str, ">") == 0 || strcmp(str, "<") == 0);
 }
 
-// Function to count arguments following a redirection operator
 void count_args_after_redirection(t_mini *mini, int *index) {
     if (mini->toks[*index] != NULL) {
         (*index)++;
@@ -120,17 +119,17 @@ t_cmds *create_new_command() {
     return new_cmd;
 }
 
-void initialize_lex(t_lexer *lex) {
+/*void initialize_lex(t_lexer *lex) {
     lex->toks_count = 0;
     lex->args = 0;
     lex->redirect = 0;
 
-}
+}*/
 
 
 int parse_input(t_mini *mini) {
     t_cmds *current_cmd = NULL;
-    t_lexer lex;
+    //t_lexer lex;
     int index = 0;
 
     //initialize_lex(&lex);
@@ -138,7 +137,7 @@ int parse_input(t_mini *mini) {
     while (mini->toks[index] != NULL) {
         if (strcmp(mini->toks[index], "|") == 0) {
             current_cmd = create_new_command();
-            initialize_cmds(current_cmd, lex.args, lex.redirect);
+            initialize_cmds(current_cmd, mini->args, mini->redirect);
 
             if (mini->cmds == NULL) {
                 mini->cmds = current_cmd;
@@ -150,14 +149,14 @@ int parse_input(t_mini *mini) {
                 temp->next = current_cmd;
             }
 
-            initialize_lex(&lex);
+            //initialize_lex(&lex);
             index++;
         } else if (is_redirection(mini->toks[index])) {
             handle_redirection(mini, current_cmd);//, &index);
-            lex.redirect++;
+            mini->redirect++;
         } else {
             handle_last_command(mini, current_cmd, &index);
-            lex.args++;
+            mini->args++;
         }
     }
 

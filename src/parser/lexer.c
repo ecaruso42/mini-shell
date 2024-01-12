@@ -4,7 +4,7 @@ int is_whitespace(char c) {
     return (c == ' ' || c == '\t' || c == '\n');
 }
 
-void tokenize_command(const char *command, t_lexer *lexer) 
+void tokenize_command(const char *command, t_mini *lexer) 
 {
     char *token = NULL;
     int token_start = 0;
@@ -88,7 +88,7 @@ int	get_env(char **envp, t_mini *mini)
 	return (0);
 }
 
-void lexer_main(const char *command, t_lexer *lexer) 
+void lexer_main(const char *command, t_mini *lexer) 
 {
     lexer->toks = malloc(sizeof(char *));
     lexer->toks[0] = NULL;
@@ -96,7 +96,7 @@ void lexer_main(const char *command, t_lexer *lexer)
     tokenize_command(command, lexer);
 }
 
-int run_lexer(const char *command, t_lexer *lexer) 
+int run_lexer(const char *command, t_mini *lexer) 
 {
     lexer->toks = NULL;
     lexer->toks_count = 0;

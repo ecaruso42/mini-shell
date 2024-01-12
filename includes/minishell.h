@@ -53,14 +53,10 @@ typedef struct s_mini
     char **env;              // (full_path)
     char **toks;             // (full_cmds)
     char *str;
-} t_mini;
-
-typedef struct s_lexer {
-    char **toks; // Token array
-    int toks_count; // Number of tokens
+    int toks_count;
     int args;
     int redirect;
-} t_lexer;
+} t_mini;
 
 //SEGNALI
 int open_next_file(const char *filename);
@@ -72,11 +68,12 @@ int parse_input(t_mini *mini);
 //EXECUTOR
 //void execute_commands(t_mini *mini, char **env);
 void execute_commands(t_mini *mini);
-void free_cmd(t_cmds *cmd);
-void initialize_lex(t_lexer *lex);
-int run_lexer(const char *command, t_lexer *lexer);
-t_mini *initialize_mini(t_mini *mini);
+void free_cmds(t_cmds *cmd);
+void initialize_lex(t_mini *lex);
+int run_lexer(const char *command, t_mini *lexer);
+t_mini *initialize_mini(char **envp);
 void handle_redirection(t_mini *mini, t_cmds *current_cmd);
 int	get_env(char **envp, t_mini *mini);
+char *find_path(t_mini *mini, char **env);
 
 #endif

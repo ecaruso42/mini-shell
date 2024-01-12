@@ -14,10 +14,10 @@
 
 t_mini *initialize_mini(char    **envp)
 {
-    mini = malloc(sizeof(t_mini));
+    t_mini *mini = malloc(sizeof(t_mini));
     if (!mini) 
     {
-        perror("Error initializing mini shell");
+        perror("Brutto STronzo");
         exit(EXIT_FAILURE);
     }
 
@@ -26,6 +26,9 @@ t_mini *initialize_mini(char    **envp)
     mini->fdout = STDOUT_FILENO;
     mini->env = envp;
     mini->toks = 0;
+    mini->toks_count = 0;
+    mini->args = 0;
+    mini->redirect = 0;
 
     return mini;
 }
@@ -56,61 +59,25 @@ int	main(int argc, char **argv, char **envp)
     (void)argc;
     (void)argv;
 	const char	*input;
-	t_mini	*mini;
-	int		i;
+	t_mini	*mini = initialize_mini(envp);
+	//int		i;
 
-	get_env(envp, &mini);
+    //initialize_mini(envp);
+	find_path(mini, envp);
+    //printf("%s\n", envp[0]);
 	while (1)
 	{
-		initialize_mini(envp);
 		//sig_ignore(&mini);
-		input = readline("BASH$: ");
+		input = readline("shell>> ");
 		add_history(input);
-		if (run_lexer (input, &mini))
+		if (run_lexer (input, mini))
 		{
-			if (parser_input(&mini))
-				execute_commands(&mini);
+			if (parse_input(mini))
+				execute_commands(mini);
 		}
-		free_cmds(&mini, input);
+		//free_cmds(&mini, input);
 	}
 	return (0);
 }
 
-/*int main(int argc, char **argv, char **envp) 
-{
-    (void)argc;
-    (void)argv;
-
-    t_mini *mini = initialize_mini(envp);
-
-    while (1) {
-        char *input = readline("shell% ");
-        if (!input)
-        {
-            printf("\n");
-            exit(0);
-        }
-        add_history(input);
-        mini->toks = NULL;
-        t_lexer lexer;
-        initialize_lex(&lexer);
-        run_lexer(input, &lexer);
-        if (parse_input(mini) != -1) 
-        {
-            execute_commands(mini);//, envp);
-        }
-        
-        int i = 0;
-        while (mini->toks[i] != NULL) 
-        {
-            free(mini->toks[i]);
-            i++;
-        }
-        free(mini->toks);
-
-        free(input);
-    }
-
-    return 0;
-}*/
 

@@ -87,7 +87,7 @@ void handle_here_document(t_mini *mini, const char *delimiter)
     size_t len = 0;
 
     while (1) {
-        printf("> ");
+        printf("<< ");
         ssize_t read_bytes = getline(&line, &len, stdin);
         if (read_bytes == -1) {
             perror("getline");

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../include/minishell.h"
+# include "../../includes/minishell.h"
 
 /*int	is_builtin(t_mini *mini, t_cmds *cmds, int i) //check if the command is a builtin
 {

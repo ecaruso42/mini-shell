@@ -18,6 +18,7 @@ SRCS = 		minishell.c \
 			src/parser/parser.c \
 			src/parser/lexer.c \
 			src/executor/exec_utils.c \
+			src/executor/executor.c \
        		#$(wildcard $(SRC_DIR)/$(PARSING_DIR)/*.c) \
        		$(wildcard $(SRC_DIR)/$(EXECUTOR_DIR)/*.c) \
        		$(wildcard $(SRC_DIR)/$(BUILTIN_DIR)/*.c) \
