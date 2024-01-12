@@ -3,39 +3,53 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlcat.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: duzegbu <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: grinella <grinella@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/16 14:41:24 by duzegbu           #+#    #+#             */
-/*   Updated: 2023/01/26 16:57:05 by duzegbu          ###   ########.fr       */
+/*   Created: 2022/09/19 17:06:30 by grinella          #+#    #+#             */
+/*   Updated: 2023/02/02 13:26:41 by grinella         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "libft.h"
 
-size_t	ft_strlcat(char *dest, const char *src, size_t size)
+size_t	ft_strlcat(char *dest, char *src, size_t size)
 {
-	char	*dst;
-	char	*source;
-	size_t	dslen;
-	size_t	rest;
+	size_t	i;
+	size_t	j;
+	char	*str;
 
-	dst = dest;
-	source = (char *) src;
-	rest = size;
-	while (rest-- != 0 && *dst != '\0')
-		dst++;
-	dslen = dst - dest;
-	rest = size - dslen;
-	if (rest == 0)
-		return (dslen + ft_strlen((char *) src));
-	while (*src != '\0')
+	str = (char *)src;
+	if (!dest && !size)
+		return (size);
+	i = ft_strlen(dest);
+	if (i >= size)
+		return (size + ft_strlen(str));
+	j = 0;
+	while (str[j] && i < size - 1)
 	{
-		if (rest > 1)
-		{
-			*dst++ = *src;
-			rest--;
-		}
-		src++;
+		dest[i] = str[j];
+		i++;
+		j++;
 	}
-	*dst = '\0';
-	return (dslen + (src - source));
+	dest[i] = 0;
+	return (i + ft_strlen(&str[j]));
 }
+
+/*
+
+#include <stdio.h>
+
+int main()
+{
+	static char	dest[15];
+	int	i;
+	i = 0;
+	while(i < 6)
+	{
+		dest[i] = 'r';
+		i++;
+	}
+	dest[11] = 'a';
+	printf("%u,%s,\n", ft_strlcat(dest, "lorem", 15), dest);
+}
+*/

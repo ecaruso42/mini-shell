@@ -1,58 +1,58 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: duzegbu <marvin@42.fr>                     +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/12/06 16:55:29 by duzegbu           #+#    #+#              #
-#    Updated: 2023/12/06 16:55:39 by duzegbu          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+NAME			=	minishell
 
-NAME = minishell
+LIBFT_A			=	libft.a
+LIBFT_DIR		=	libft/
+LIBFT			=	$(addprefix $(LIBFT_DIR), $(LIBFT_A))
 
-SRC_DIR = src
-PARSER_DIR = parser
-EXECUTOR_DIR = executor
-BUILTINS_DIR = builtins
-SIGNALS_DIR = signals
-UTILS_DIR = utils
+CC				=	gcc
+INCLUDE			=	includes
+CFLAGS			=	-Wall -Wextra -Werror -I$(INCLUDE)
+RM				=	rm -f
 
-SRCS = $(wildcard $(SRC_DIR)/*.c) \
-		minishell.c \
-       $(wildcard $(SRC_DIR)/$(PARSER_DIR)/*.c) \
-       $(wildcard $(SRC_DIR)/$(EXECUTOR_DIR)/*.c) \
-       $(wildcard $(SRC_DIR)/$(BUILTINS_DIR)/*.c) \
-       $(wildcard $(SRC_DIR)/$(SIGNALS_DIR)/*.c) \
-       $(wildcard $(SRC_DIR)/$(UTILS_DIR)/*.c)
+EXECUTOR_DIR	=	src/executor
+PARSING_DIR		=	src/parser
+BUILTIN_DIR		=	src/builtins
+SIGNAL_DIR 		=	src/signals
 
-OBJS = $(SRCS:.c=.o)
+SRCS = 		minishell.c \
+			src/parser/parser.c \
+			src/parser/lexer.c \
+			src/executor/exec_utils.c \
+       		#$(wildcard $(SRC_DIR)/$(PARSING_DIR)/*.c) \
+       		$(wildcard $(SRC_DIR)/$(EXECUTOR_DIR)/*.c) \
+       		$(wildcard $(SRC_DIR)/$(BUILTIN_DIR)/*.c) \
+       		$(wildcard $(SRC_DIR)/$(SIGNAL_DIR)/*.c) \
 
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror
-INCLUDES = -Iincludes -Ilibft
+OBJS		=	$(SRCS:%.c=%.o)
 
-LIBFT = libft.a
-LIBFT_PATH = libft
+all:		$(NAME)
 
-all: $(NAME)
+$(NAME):	$(LIBFT) $(OBJS)
+			@$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -L$(LIBFT_DIR) -lft -L/Users/$(USER)/.brew/opt/readline/lib -lreadline -ltermcap
+			@echo "\nLinked into executable \033[0;32mminishell\033[0m."
 
-$(NAME): $(OBJS)
-	@make -C $(LIBFT_PATH)
-	@$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^ -L$(LIBFT_PATH) -lft -lreadline
+$(LIBFT):	
+			@echo "Compiling libft.a"
+			@$(MAKE) all -s -C $(LIBFT_DIR)
 
-%.o: %.c
-	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+.c.o:
+			@printf "\033[0;33mGenerating minishell objects... %-33.33s\r" $@
+			@$(CC) $(CFLAGS) -c $< -o $(<:.c=.o)
 
-clean:
-	@make clean -C $(LIBFT_PATH)
-	@rm -f $(OBJS)
+localclean:
+			@$(RM) $(OBJS)
+			@echo "Removed object files."
 
-fclean: clean
-	@make fclean -C $(LIBFT_PATH)
-	@rm -f $(NAME)
+clean:		localclean
+			@$(MAKE) clean -s -C $(LIBFT_DIR)
+			@echo "Clean libft."
 
-re: fclean all
+fclean:		localclean
+			@$(MAKE) fclean -s -C $(LIBFT_DIR)
+			@echo "Full clean libft."
+			@$(RM) $(NAME)
+			@echo "Removed executable."
 
-.PHONY: all clean fclean re
+re:			fclean all
+
+.PHONY:		all clean fclean localclean re

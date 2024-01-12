@@ -3,48 +3,56 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: duzegbu <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: grinella <grinella@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/24 15:26:02 by duzegbu           #+#    #+#             */
-/*   Updated: 2023/01/24 17:11:43 by duzegbu          ###   ########.fr       */
+/*   Created: 2023/01/30 15:30:37 by grinella          #+#    #+#             */
+/*   Updated: 2023/01/31 10:55:23 by grinella         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "libft.h"
 
-int	lenght(int nb, int base)
+static int	ft_len(int n)
 {
-	int	count;
+	int	len;
 
-	count = 0;
-	if (nb <= 0)
-		++count;
-	while (nb && ++count)
-		nb /= base;
-	return (count);
+	len = 0;
+	if (n < 0)
+	{
+		len++;
+		n = -n;
+	}
+	while (n > 0)
+	{
+		n = n / 10;
+		len++;
+	}
+	return (len);
 }
 
-char	*ft_itoa(int nb)
+char	*ft_itoa(int n)
 {
-	int			len;
-	char		*str;
-	const char	*digits = "0123456789";
+	char	*str;
+	int		len;
 
-	len = lenght(nb, 10);
-	str = malloc(sizeof(char) * (len + 1));
+	len = ft_len(n);
+	if (n == -2147483648)
+		return (ft_strdup("-2147483648"));
+	if (n == 0)
+		return (ft_strdup("0"));
+	str = (char *)malloc(sizeof(char) * (len + 1));
 	if (!str)
-		return (0);
-	str[len] = 0;
-	if (nb == 0)
-		str[0] = '0';
-	if (nb < 0)
-		str[0] = '-';
-	while (nb)
+		return (NULL);
+	str[len] = '\0';
+	if (n < 0)
 	{
-		if (nb > 0)
-			str[--len] = digits[nb % 10];
-		else
-			str[--len] = digits[nb % 10 * -1];
-		nb /= 10;
+		str[0] = '-';
+		n = -n;
+	}
+	while (n > 0)
+	{
+		str[--len] = n % 10 + '0';
+		n = n / 10;
 	}
 	return (str);
 }
