@@ -24,6 +24,14 @@ typedef struct s_list
 	struct s_list	*next;
 }	t_list;
 
+typedef struct s_parse
+{
+	int				toks; //parser toks
+	int				p_args; //parser args
+	int				red; //count_redirect
+	int				args; //count_args
+}				t_parse;
+
 size_t		ft_strlen(const char *str);
 int			ft_atoi(const char *str);
 void		*ft_calloc(size_t count, size_t size);

@@ -41,6 +41,7 @@ typedef struct s_cmds
     t_redirect *redirect;
     int fdi;
     int fdo;
+    int redirect_count;
     struct s_cmds *next;
 } t_cmds;
 

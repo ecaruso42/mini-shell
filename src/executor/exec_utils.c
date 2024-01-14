@@ -12,7 +12,6 @@ int find_env_index(char **env, const char *var)
     return -1;
 }
 
-// Function to check if a binary executable exists in PATH directories
 int find_binary_path(t_mini *mini, t_cmds *cmds) 
 {
     int index = 0;
@@ -39,7 +38,6 @@ int find_binary_path(t_mini *mini, t_cmds *cmds)
     return -1;
 }
 
-// Function to add path to a command to make it a full path
 char *add_path_to_command(t_mini *mini, t_cmds *cmds, int index) 
 {
     char *path = mini->env[index] + 5;
@@ -53,26 +51,33 @@ char *add_path_to_command(t_mini *mini, t_cmds *cmds, int index)
 }
 
 // Function to execute a command using execve after checking whether it's a built-in command or an external binary
-void execute_command(t_mini *mini, t_cmds *cmds) 
+void execute(t_mini *mini, t_cmds *cmds) 
 {
-    if (strcmp(cmds->cmd, "cd") == 0) {
+    if (strcmp(cmds->cmd, "cd") == 0) 
+    {
         // Handle cd as a built-in command
-        if (cmds->args[1] != NULL) {
-            if (chdir(cmds->args[1]) == -1) {
+        if (cmds->args[1] != NULL) 
+        {
+            if (chdir(cmds->args[1]) == -1) 
+            {
                 perror("cd");
             }
         }
-    } else if (strcmp(cmds->cmd, "exit") == 0) {
+    } else if (strcmp(cmds->cmd, "exit") == 0) 
+    {
         // Handle exit as a built-in command
         exit(EXIT_SUCCESS);
-    } else {
+    } else 
+    {
         int index = find_binary_path(mini, cmds);
-        if (index != -1) {
+        if (index != -1) 
+        {
             char *full_path = add_path_to_command(mini, cmds, index);
             execve(full_path, cmds->args, mini->env);
             perror("execve");
             free(full_path);
-        } else {
+        } else 
+        {
             fprintf(stderr, "Error: Command not found\n");
             exit(EXIT_FAILURE);
         }
@@ -182,7 +187,7 @@ void execute_pipeline(t_mini *mini)
         } else if (pid == 0) {
             close_file_descriptors(mini);
             update_file_descriptors(mini, cmd);
-            execute_command(mini, cmd);
+            execute(mini, cmd);
         } else {
             close(cmd->fdo);
             if (!cmd->next) {
@@ -202,12 +207,15 @@ void execute_pipeline(t_mini *mini)
 }
 
 // Main execution function
-void execute_commands(t_mini *mini) {
+void execute_commands(t_mini *mini) 
+{
     t_cmds *cmd = mini->cmds;
 
-    while (cmd) {
+    while (cmd) 
+    {
         // Handle here document redirection
-        if (cmd->redirect && cmd->redirect->redirect_type == 3) {
+        if (cmd->redirect && cmd->redirect->redirect_type == 3) 
+        {
             handle_here_document(mini, cmd->redirect->infile);
             cmd = cmd->next;
             continue;

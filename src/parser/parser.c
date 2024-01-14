@@ -1,5 +1,46 @@
 #include "../../includes/minishell.h"
 
+t_parse *initialize_parser() 
+{
+    t_parse *parser = (t_parse *)malloc(sizeof(t_parse));
+    if (parser == NULL) 
+    {
+        exit(EXIT_FAILURE);
+    }
+
+    parser->toks = 0;
+    parser->p_args = 0;
+    parser->red = 0;
+    parser->args = 0;
+
+    return parser;
+}
+
+t_cmds *initialize_cmds() 
+{
+    t_cmds *cmds = (t_cmds *)malloc(sizeof(t_cmds));
+    if (cmds == NULL) 
+    {
+        exit(EXIT_FAILURE);
+    }
+
+    cmds->cmd = NULL;
+    cmds->args = NULL;
+    cmds->redirect = (t_redirect *)malloc(sizeof(t_redirect));
+    if (cmds->redirect == NULL) 
+    {
+        exit(EXIT_FAILURE);
+    }
+    cmds->redirect->infile = NULL;
+    cmds->redirect->outfile = NULL;
+    cmds->redirect->redirect_type = 0;
+    cmds->fdi = 0;
+    cmds->fdo = 0;
+    cmds->redirect_count = 0;
+    cmds->next = NULL;
+
+    return cmds;
+}
 
 int open_next_file(const char *filename) 
 {
@@ -29,58 +70,44 @@ int open_next_file(const char *filename)
     return fd;
 }
 
-int is_redirection(const char *str) 
+int is_redirection(char *str) 
 {
-    return (strcmp(str, ">") == 0 || strcmp(str, "<") == 0);
+    return (str && (str[0] == '<' || str[0] == '>' || (str[1] && str[1] == '>')));
 }
 
-void count_args_after_redirection(t_mini *mini, int *index) 
+int count_total_redirection(t_mini *mini, int i) 
 {
-    if (mini->toks[*index] != NULL) 
+    while (mini->toks[i] && is_redirection(mini->toks[i])) 
     {
-        (*index)++;
+        i++;
     }
+    return i;
 }
 
-int count_total_arguments(t_mini *mini) 
+int count_total_args(t_mini *mini, t_parse *parser) 
 {
     int count = 0;
-    int index = 0;
-
-    while (mini->toks[index] != NULL) 
+    while (mini->toks[parser->args] && !is_redirection(mini->toks[parser->args]) && strcmp(mini->toks[parser->args], "|") != 0) 
     {
-        if (strcmp(mini->toks[index], "|") == 0 || is_redirection(mini->toks[index])) 
-        {
-            break;
-        } else 
-        {
-            count++;
-        }
-        index++;
+        parser->args++;
+        count++;
     }
-
     return count;
 }
 
-int count_total_redirections(t_mini *mini) 
+int count_redirection_toks(t_mini *mini, t_parse *parser) 
 {
     int count = 0;
-    int index = 0;
-
-    while (mini->toks[index] != NULL) 
+    while (mini->toks[parser->red] && is_redirection(mini->toks[parser->red])) 
     {
-        if (is_redirection(mini->toks[index])) 
-        {
-            count++;
-        }
-        index++;
+        parser->red++;
+        count++;
     }
-
     return count;
 }
 
 
-void initialize_cmds(t_cmds *cmds, int args_count, int redirect_count) 
+/*void initialize_cmds(t_cmds *cmds, int args_count, int redirect_count) 
 {
     cmds->cmd = NULL;
 
@@ -92,35 +119,83 @@ void initialize_cmds(t_cmds *cmds, int args_count, int redirect_count)
     cmds->fdi = 0;
     cmds->fdo = 1;
     cmds->next = NULL;
-}
-
-/*void handle_redirection(t_mini *mini, t_cmds *cmds, int *index) {
-    if (strcmp(mini->toks[*index], "<") == 0) {
-        cmds->fdi = open_next_file(mini->toks[++(*index)]);
-    } else if (strcmp(mini->toks[*index], ">") == 0) {
-        cmds->fdo = open_next_file(mini->toks[++(*index)]);
-    } else if (strcmp(mini->toks[*index], ">>") == 0) {
-        cmds->fdo = open_next_file(mini->toks[++(*index)]);
-    }
 }*/
 
-// Function to handle adding the last command in the command sequence to the cmds structure
-void handle_last_command(t_mini *mini, t_cmds *cmds, int *index) 
+int handle_redirection_1(t_cmds *cmds, char **toks, t_parse *parser, int i) 
 {
-    if (cmds->cmd == NULL) {
-        cmds->cmd = strdup(mini->toks[*index]);
-    } else {
-        int args_count = 0;
-        while (cmds->args[args_count] != NULL) {
-            args_count++;
-        }
-
-        cmds->args = realloc(cmds->args, (args_count + 2) * sizeof(char *));
-        cmds->args[args_count] = strdup(mini->toks[*index]);
-        cmds->args[args_count + 1] = NULL;
+    (void)parser;
+    if (!toks[i + 1] || strcmp(toks[i + 1], "|") == 0) 
+    {
+        printf("Error: Missing argument for redirection.\n");
+        return -1;
     }
 
-    (*index)++;
+    if (is_redirection(toks[i + 1])) {
+        i++;
+    } else {
+        cmds->redirect->outfile = toks[i + 1];
+        if (toks[i][0] == '>') {
+            cmds->redirect->redirect_type = 1;
+        } else {
+            cmds->redirect->redirect_type = 3;
+        }
+        cmds->redirect->infile = NULL;
+        cmds->redirect_count++;
+        cmds->fdo = 1;
+        i += 2;
+    }
+
+    return i;
+}
+
+int handle_redirection_2(t_cmds *cmds, char **toks, t_parse *parser, int i) 
+{
+    (void)parser;
+    if (!toks[i + 1] || strcmp(toks[i + 1], "|") == 0) 
+    {
+        printf("Error: Missing argument for redirection.\n");
+        return -1;
+    }
+
+    if (is_redirection(toks[i + 1])) 
+    {
+        i++;
+    } else 
+    {
+        cmds->redirect->infile = toks[i + 1];
+        cmds->redirect->redirect_type = 3;
+        cmds->redirect->outfile = NULL;
+        cmds->redirect->redirect_type = 0;
+        cmds->redirect_count++;
+        cmds->fdi = 1;
+        i += 2;
+    }
+
+    return i;
+}
+
+// Function to handle adding the last command in the command sequence to the cmds structure
+void	handle_last_command(t_mini *mini, t_parse *parser, t_cmds *cmds)
+{
+	if (cmds->cmd == NULL)
+	{
+        printf("%s\n", mini->toks[0]);
+		cmds->cmd = ft_strdup(mini->toks[parser->toks]);
+		cmds->args[parser->p_args] = ft_strdup(mini->toks[parser->toks]);
+		parser->toks++;
+	}
+	else
+	{
+		while (mini->toks[parser->toks]
+			&& ft_strncmp(mini->toks[parser->toks], "|", 1)
+			&& !is_redirection(mini->toks[parser->toks]))
+		{
+			cmds->args[parser->p_args] = ft_strdup(mini->toks[parser->toks]);
+			parser->toks++;
+		}
+	}
+	parser->p_args++;
+	cmds->args[parser->p_args] = NULL;
 }
 
 // Function to create a new command in the linked list of commands
@@ -147,50 +222,92 @@ t_cmds *create_new_command()
 
 int parse_input(t_mini *mini) 
 {
-    //printf("holy\n");
-    t_cmds *current_cmd = NULL;
-    //t_lexer lex;
-    int index = 0;
+    t_cmds *head = initialize_cmds();
+    t_cmds *current = head;
+    t_parse *parser = initialize_parser();
+    int i = 0;
 
-    //initialize_lex(&lex);
-    
-    while (mini->toks[index] != NULL) 
+    while (mini->toks[i]) 
     {
-        //printf("holy\n");
-        if (strcmp(mini->toks[index], "|") == 0) 
+        if (strcmp(mini->toks[i], "|") == 0) 
         {
-            current_cmd = create_new_command();
-            initialize_cmds(current_cmd, mini->args, mini->redirect);
-
-            if (mini->cmds == NULL) 
+            current->next = initialize_cmds();
+            current = current->next;
+            parser->args++;
+        } 
+        else if (is_redirection(mini->toks[i])) 
+        {
+            if (mini->toks[i][0] == '>') 
             {
-                mini->cmds = current_cmd;
-            } else 
+                i = handle_redirection_1(current, mini->toks, parser, i);
+            } else if (mini->toks[i][0] == '<') 
             {
-                t_cmds *temp = mini->cmds;
-                while (temp->next != NULL) 
-                {
-                    temp = temp->next;
-                }
-                temp->next = current_cmd;
+                i = handle_redirection_2(current, mini->toks, parser, i);
             }
 
-            //initialize_lex(&lex);
-            index++;
-        } else if (is_redirection(mini->toks[index])) 
+            if (i == -1) 
+            {
+                return -1;
+            }
+        } 
+        else 
         {
-            handle_redirection(mini, current_cmd);//, &index);
-            mini->redirect++;
-        } else 
-        {
-            handle_last_command(mini, current_cmd, &index);
-            mini->args++;
+            handle_last_command(mini, parser, current);
         }
-    }
-    if (current_cmd != NULL && current_cmd->cmd != NULL) 
-    {
-        return 1;
+
+        i++;
     }
 
-    return -1; // Syntax error
+    return 0;
 }
+
+/*int	parse_input(t_mini *mini)
+{
+	t_parse	parser;
+	t_cmds		*cmds;
+	t_cmds		*head;
+
+	initialize_parser();
+	cmds = ft_calloc(sizeof(t_cmds), 1);
+	head = cmds;
+	initialize_cmds();
+	while (mini->toks[parser.toks])
+	{
+		if (ft_strncmp(mini->toks[parser.toks], "|", 1) == 0)
+		{
+			if (mini->toks[parser.toks + 1] == NULL)
+				return (-1);
+			mini->cmds_count++;
+			parser.p_args = 0;
+			cmds->next = ft_calloc(sizeof(t_cmds), 1);
+			cmds = cmds->next;
+			parser.red++;
+			initialize_cmds();
+			parser.toks++;
+		}
+		else if (!ft_strncmp(mini->toks[parser.toks], ">>", 2))
+		{
+			if (handle_redirection_1(cmds, mini->toks, &parser, 2) == -1)
+				return (-1);
+		}
+		else if (!ft_strncmp(mini->toks[parser.toks], ">", 1))
+		{
+			if (handle_redirection_1(cmds, mini->toks, &parser, 1) == -1)
+				return (-1);
+		}
+		else if (!ft_strncmp(mini->toks[parser.toks], "<<", 2))
+		{
+			if (handle_redirection_2(cmds, mini->toks, &parser, 4) == -1)
+				return (-1);
+		}
+		else if (!ft_strncmp(mini->toks[parser.toks], "<", 1))
+		{
+			if (handle_redirection_2(cmds, mini->toks, &parser, 3) == -1)
+				return (-1);
+		}
+		else
+			handle_last_command(mini, &parser, cmds);
+	}
+	mini->cmds = head;
+	return (1);
+}*/
