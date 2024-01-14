@@ -38,7 +38,7 @@ void free_cmd(t_cmds *cmd)
     free(cmd->cmd);
     if (cmd->args)
     {
-        for (int i = 0; cmd->args[i] != NULL; i++)
+        for (int i = 0; cmd->args[i] != NULL; i++) //norminette for to while
         {
             free(cmd->args[i]);
         }
@@ -63,18 +63,25 @@ int	main(int argc, char **argv, char **envp)
 	//int		i;
 
     //initialize_mini(envp);
-	find_path(mini, envp);
-    //printf("%s\n", envp[0]);
+	get_env(envp, mini);
 	while (1)
 	{
-		//sig_ignore(&mini);
 		input = readline("shell>> ");
-		add_history(input);
-		if (run_lexer (input, mini))
+        if (input && input[0])
+        {
+            add_history(input);
+        }
+        if (input && input[0])
 		{
-			if (parse_input(mini))
-				execute_commands(mini);
-		}
+            if (run_lexer (input, mini))
+		    {
+			    if (parse_input(mini))
+                {
+                    //printf("holy\n");
+                    execute_commands(mini);
+                }
+		    }
+        }
 		//free_cmds(&mini, input);
 	}
 	return (0);

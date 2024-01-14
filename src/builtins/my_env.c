@@ -41,8 +41,10 @@ char *get_env(char *var, char **envp, int n) {
 }*/
 
 
-char **set_env(char *var, char *value, char **envp, int n) {
-    if (n < 0) {
+char **set_env(char *var, char *value, char **envp, int n) 
+{
+    if (n < 0) 
+    {
         n = strlen(var);
     }
 
@@ -54,22 +56,26 @@ char **set_env(char *var, char *value, char **envp, int n) {
 
     // Count the number of entries in the original environment variable array
     int count = 0;
-    while (envp[count] != NULL) {
+    while (envp[count] != NULL) 
+    {
         count++;
     }
 
     // Create a new environment variable array with one additional entry
     char **new_envp = malloc((count + 2) * sizeof(char *));
-    if (new_envp == NULL) {
+    if (new_envp == NULL) 
+    {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
 
     // Copy the original environment variable entries to the new array using a while loop
     int i = 0;
-    while (i < count) {
+    while (i < count) 
+    {
         new_envp[i] = strdup(envp[i]);
-        if (new_envp[i] == NULL) {
+        if (new_envp[i] == NULL) 
+        {
             fprintf(stderr, "Memory allocation failed\n");
             exit(EXIT_FAILURE);
         }

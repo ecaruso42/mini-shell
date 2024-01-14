@@ -147,13 +147,16 @@ t_cmds *create_new_command()
 
 int parse_input(t_mini *mini) 
 {
+    //printf("holy\n");
     t_cmds *current_cmd = NULL;
     //t_lexer lex;
     int index = 0;
 
     //initialize_lex(&lex);
     
-    while (mini->toks[index] != NULL) {
+    while (mini->toks[index] != NULL) 
+    {
+        //printf("holy\n");
         if (strcmp(mini->toks[index], "|") == 0) 
         {
             current_cmd = create_new_command();
@@ -184,7 +187,6 @@ int parse_input(t_mini *mini)
             mini->args++;
         }
     }
-
     if (current_cmd != NULL && current_cmd->cmd != NULL) 
     {
         return 1;
