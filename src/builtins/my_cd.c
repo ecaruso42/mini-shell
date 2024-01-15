@@ -7,7 +7,7 @@ int	my_cd(t_prompt *p)
 
 	int g_status = 0;
 	str[0] = ((t_build *)p->cmds->content)->full_cmd;
-	aux = get_env("HOME", p->envp, 4);
+	aux = get_env_char("HOME", p->envp, 4);
 	if (!aux)
 		aux = ft_strdup("");
 	str[1] = extend_matrix(NULL, aux);

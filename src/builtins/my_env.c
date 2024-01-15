@@ -1,6 +1,6 @@
 # include "../../includes/minishell.h"
 
-char *get_env(char *var, char **envp, int n) {
+char *get_env_char(char *var, char **envp, int n) {
     int i = 0;
 
     while (envp[i] != NULL) {

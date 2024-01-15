@@ -177,6 +177,7 @@ int handle_redirection_2(t_cmds *cmds, char **toks, t_parse *parser, int i)
 // Function to handle adding the last command in the command sequence to the cmds structure
 void	handle_last_command(t_mini *mini, t_parse *parser, t_cmds *cmds)
 {
+    initialize_cmds();
 	if (cmds->cmd == NULL)
 	{
         printf("%s\n", mini->toks[0]);
@@ -250,7 +251,7 @@ int parse_input(t_mini *mini)
                 return -1;
             }
         } 
-        else 
+        else
         {
             handle_last_command(mini, parser, current);
         }
