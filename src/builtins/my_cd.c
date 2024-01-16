@@ -6,7 +6,7 @@ int	my_cd(t_prompt *p)
 	char	*aux;
 
 	int g_status = 0;
-	str[0] = ((t_build *)p->cmds->content)->full_cmd;
+	str[0] = ((t_mini *)p->cmds->content)->full_cmd;
 	aux = get_env_char("HOME", p->envp, 4);
 	if (!aux)
 		aux = ft_strdup("");

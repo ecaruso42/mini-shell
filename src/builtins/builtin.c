@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ofadhel <ofadhel@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ecaruso <ecaruso@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/24 14:51:47 by ofadhel           #+#    #+#             */
-/*   Updated: 2023/12/31 21:27:16 by ofadhel          ###   ########.fr       */
+/*   Created: 2024/01/13 17:55:58 by grinella          #+#    #+#             */
+/*   Updated: 2024/01/16 17:29:22 by ecaruso          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../includes/minishell.h"
+#include "../../includes/minishell.h"
 
 /*int	is_builtin(t_mini *mini, t_cmds *cmds, int i) //check if the command is a builtin
 {
@@ -103,6 +103,12 @@ int	builtin_3(t_mini *mini, int i)
 	return (0);
 }*/
 
+// typedef struct	s_prompt
+// {
+// 	char	**env;
+// 	char	*pwd;
+// }	t_prompt;
+
 int	builtin(t_prompt *prompt, t_list *cmd, int *is_exit, int n)
 {
 	char	**a;
@@ -122,6 +128,12 @@ int	builtin(t_prompt *prompt, t_list *cmd, int *is_exit, int n)
 			g_status = my_export(prompt);
 		else if (!cmd->next && a && !ft_strncmp(*a, "unset", n) && n == 5)
 			g_status = my_unset(prompt);
+		else if (!cmd->next && a && !ft_strncmp(*a, "pwd", n) && n == 3)
+			g_status = my_pwd(prompt);
+		else if (!cmd->next && a && !ft_strncmp(*a, "env", n) && n == 3)
+			g_status = my_env(prompt);
+		else if (!cmd->next && a && !ft_strncmp(*a, "echo", n) && n == 4)
+			g_status = my_echo(prompt);
 		else
 		{
 			signal(SIGINT, SIG_IGN);

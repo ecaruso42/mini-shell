@@ -1,6 +1,7 @@
 #include  "../../includes/minishell.h"
 
-int find_env_index(char **env, const char *var) 
+/*
+int find_env_index(char **env, const char *var)
 {
     int index = 0;
     while (env[index] != NULL) {
@@ -12,7 +13,7 @@ int find_env_index(char **env, const char *var)
     return -1;
 }
 
-int find_binary_path(t_mini *mini, t_cmds *cmds) 
+int find_binary_path(t_mini *mini, t_cmds *cmds)
 {
     int index = 0;
     while (mini->env[index] != NULL) {
@@ -38,7 +39,7 @@ int find_binary_path(t_mini *mini, t_cmds *cmds)
     return -1;
 }
 
-char *add_path_to_command(t_mini *mini, t_cmds *cmds, int index) 
+char *add_path_to_command(t_mini *mini, t_cmds *cmds, int index)
 {
     char *path = mini->env[index] + 5;
     char *full_path = malloc(strlen(path) + strlen(cmds->cmd) + 2);
@@ -51,32 +52,33 @@ char *add_path_to_command(t_mini *mini, t_cmds *cmds, int index)
 }
 
 // Function to execute a command using execve after checking whether it's a built-in command or an external binary
-void execute(t_mini *mini, t_cmds *cmds) 
+void execute(t_mini *mini, t_cmds *cmds)
 {
-    if (strcmp(cmds->cmd, "cd") == 0) 
+    if (strcmp(cmds->cmd, "cd") == 0)
     {
         // Handle cd as a built-in command
-        if (cmds->args[1] != NULL) 
+        if (cmds->args[1] != NULL)
         {
-            if (chdir(cmds->args[1]) == -1) 
+            if (chdir(cmds->args[1]) == -1)
             {
                 perror("cd");
             }
         }
-    } else if (strcmp(cmds->cmd, "exit") == 0) 
+    } else if (strcmp(cmds->cmd, "exit") == 0)
     {
         // Handle exit as a built-in command
         exit(EXIT_SUCCESS);
-    } else 
+    } else
     {
         int index = find_binary_path(mini, cmds);
-        if (index != -1) 
+        if (index != -1)
         {
+			printf("check\n");
             char *full_path = add_path_to_command(mini, cmds, index);
             execve(full_path, cmds->args, mini->env);
             perror("execve");
             free(full_path);
-        } else 
+        } else
         {
             fprintf(stderr, "Error: Command not found\n");
             exit(EXIT_FAILURE);
@@ -85,7 +87,7 @@ void execute(t_mini *mini, t_cmds *cmds)
 }
 
 
-void handle_here_document(t_mini *mini, const char *delimiter) 
+void handle_here_document(t_mini *mini, const char *delimiter)
 {
     (void)mini;
     char *line = NULL;
@@ -108,7 +110,7 @@ void handle_here_document(t_mini *mini, const char *delimiter)
 }
 
 // Function to handle input (<) and output (>, >>) redirection
-void handle_redirection(t_mini *mini, t_cmds *current_cmd) 
+void handle_redirection(t_mini *mini, t_cmds *current_cmd)
 {
     if (current_cmd->redirect->infile != NULL) {
         mini->fdin = open(current_cmd->redirect->infile, O_RDONLY);
@@ -135,7 +137,7 @@ void handle_redirection(t_mini *mini, t_cmds *current_cmd)
 }
 
 // Function to update file descriptors based on redirection information
-void update_file_descriptors(t_mini *mini, t_cmds *current_cmd) 
+void update_file_descriptors(t_mini *mini, t_cmds *current_cmd)
 {
     if (current_cmd->fdi != -1) {
         dup2(current_cmd->fdi, STDIN_FILENO);
@@ -155,14 +157,14 @@ void update_file_descriptors(t_mini *mini, t_cmds *current_cmd)
 }
 
 // Function to close file descriptors related to input and output
-void close_file_descriptors(t_mini *mini) 
+void close_file_descriptors(t_mini *mini)
 {
     close(mini->fdin);
     close(mini->fdout);
 }
 
 // Function to execute multiple commands in a pipeline
-void execute_pipeline(t_mini *mini) 
+void execute_pipeline(t_mini *mini)
 {
     t_cmds *cmd = mini->cmds;
     int saved_stdin = dup(STDIN_FILENO);
@@ -207,14 +209,14 @@ void execute_pipeline(t_mini *mini)
 }
 
 // Main execution function
-void execute_commands(t_mini *mini) 
+void execute_commands(t_mini *mini)
 {
     t_cmds *cmd = mini->cmds;
 
-    while (cmd) 
+    while (cmd)
     {
         // Handle here document redirection
-        if (cmd->redirect && cmd->redirect->redirect_type == 3) 
+        if (cmd->redirect && cmd->redirect->redirect_type == 3)
         {
             handle_here_document(mini, cmd->redirect->infile);
             cmd = cmd->next;
@@ -230,3 +232,4 @@ void execute_commands(t_mini *mini)
         cmd = cmd->next;
     }
 }
+*/

@@ -4,27 +4,28 @@ void print_error(const char *msg) {
     fprintf(stderr, "Error: %s\n", msg);
 }
 
-int my_exit(t_list *ncd, int *n) {
+int my_exit(t_list *ncd, int *n)
+{
     // Extract the build information from the linked list node
     t_mini *node = (t_mini *)ncd->content;
-    
+
     // Check if the command is an exit command (no arguments)
     *n = !ncd->next;
-    
+
     // Print "exit" if it's an exit command
     if (*n) {
         printf("exit\n");
     }
-    
+
     // Check if there are no arguments
     if (!node->toks || !node->toks[1]) {
         return 0;
     }
-    
+
     // Declare an array to store the exit status and parse the argument
     long status[2];
     status[1] = atoi(node->toks[1]);
-    
+
     // Check for invalid numeric argument
     if (status[1] == 0 && node->toks[1][0] != '0') {
         print_error("Numeric argument required");
@@ -38,7 +39,7 @@ int my_exit(t_list *ncd, int *n) {
 
     // Ensure the exit status wraps around modulo 256
     status[0] %= 256 + 256 * (status[0] < 0);
-    
+
     // Return the exit status
     return (int)status[0];
 }

@@ -19,9 +19,17 @@ SRCS = 		minishell.c \
 			src/parser/lexer.c \
 			src/executor/exec_utils.c \
 			src/executor/executor.c \
+			#src/builtins/builtin_utils.c \
+			src/builtins/builtin.c \
+			src/builtins/my_cd.c \
+			src/builtins/my_echo.c \
+			src/builtins/my_env.c \
+			src/builtins/my_exit.c \
+			src/builtins/my_export.c \
+			src/builtins/my_pwd.c \
+			src/builtins/my_unset.c \
        		#$(wildcard $(SRC_DIR)/$(PARSING_DIR)/*.c) \
        		$(wildcard $(SRC_DIR)/$(EXECUTOR_DIR)/*.c) \
-       		$(wildcard $(SRC_DIR)/$(BUILTIN_DIR)/*.c) \
        		$(wildcard $(SRC_DIR)/$(SIGNAL_DIR)/*.c) \
 
 OBJS		=	$(SRCS:%.c=%.o)
@@ -32,7 +40,7 @@ $(NAME):	$(LIBFT) $(OBJS)
 			@$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -L$(LIBFT_DIR) -lft -L/Users/$(USER)/.brew/opt/readline/lib -lreadline -ltermcap
 			@echo "\nLinked into executable \033[0;32mminishell\033[0m."
 
-$(LIBFT):	
+$(LIBFT):
 			@echo "Compiling libft.a"
 			@$(MAKE) all -s -C $(LIBFT_DIR)
 

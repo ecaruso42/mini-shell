@@ -1,6 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executor.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ecaruso <ecaruso@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/01/16 19:36:40 by ecaruso           #+#    #+#             */
+/*   Updated: 2024/01/16 19:47:03 by ecaruso          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
-/*void execute_commands(t_mini *mini) {
+/*
+void execute_commands(t_mini *mini) {
     t_cmds *cmd = mini->cmds;
     int saved_stdin = dup(STDIN_FILENO);
     int saved_stdout = dup(STDOUT_FILENO);
@@ -44,77 +57,91 @@
                 printf("Unknown termination\n");
             }
             //exit(EXIT_SUCCESS);
-            
+
             }
 
         cmd = cmd->next;
     }
- 
+
     dup2(saved_stdin, STDIN_FILENO);
     dup2(saved_stdout, STDOUT_FILENO);
 
     close(saved_stdin);
     close(saved_stdout);
-}*/
+}
+*/
 
-char *find_path(t_mini *mini, char **env)
+char	*find_path(t_mini *mini, char **env)
 {
-	struct stat buff;
-	int		i;
-	char	**base;
-	char	*temp;
+	struct stat	buff;
+	int			i;
+	char		**base;
+	char		*temp;
+	char		*path;
 
 	i = 0;
 	while (ft_strncmp(env[i], "PATH=", 5))
 		i++;
 	base = ft_split((env[i] + 5), ':');
 	i = -1;
-	while(base && base[++i])
+	while (base && base[++i])
 	{
 		temp = ft_strjoin(base[i], "/");
-		if (!lstat(ft_strjoin(temp, mini->str), &buff))
+		if (!lstat(ft_strjoin(temp, mini->toks[0]), &buff))
 		{
-			temp = ft_strjoin(temp, mini->str);
-			return(temp);
+			path = ft_strjoin(temp, mini->toks[0]);
+			free(temp);
+			return (path);
 		}
-		free(temp);
 	}
 	free(temp);
-	return(temp);
+	return (NULL);
 }
 
-/*void execute_commands(t_mini *mini, char **env)
+//funzione da cancellare
+void	ft_print_matrix(char **matrix)
 {
-	//l'execve funziona ma la matrice con in comandi la creo in questa funzione (char **str) mentre dovrebbe essere
-	//assegnata nel parser sulla variabile mini->toks
+	int	i;
+
+	i = 0;
+	printf("check");
+	while (matrix[i])
+	{
+		printf("posizione matrice:%i\ncontenuto matrice:%s\n", i, matrix[i]);
+		i++;
+	}
+	return ;
+}
+
+void	execute_commands(t_mini *mini)
+{
 	int		status;
 	char	*path;
-	char	**str;
 	pid_t	pid;
 
-	path = find_path(mini, env);
-	str = malloc(sizeof (char) * 2);
-	str[0] = ft_strdup(mini->str);
-	str[1] = NULL;
+	path = find_path(mini, mini->env);
 	pid = fork();
 	if (pid == -1)
 	{
-        perror("Fork failed");
-        exit(EXIT_FAILURE);
-    }
+		perror("Fork failed");
+		exit(EXIT_FAILURE);
+	}
 	else if (pid == 0)
 	{
-		execve(path, str, env);
+		printf("J\n");
+		execve(path, mini->toks, mini->env);
+		printf("K\n");
 		perror("Execve failed");
+		printf("L\n");
 		exit(EXIT_FAILURE);
 	}
 	else
 	{
 		waitpid(pid, &status, 0);
+		printf("M\n");
 		if (WIFEXITED(status))
 			printf("PORCODIO %d\n", WEXITSTATUS(status));
 		else
-			printf("PORCODIO\n");
+			printf("PORCODEDDIO\n");
 	}
-}*/
-
+}
